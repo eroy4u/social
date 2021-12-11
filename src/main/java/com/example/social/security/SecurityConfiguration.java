@@ -1,5 +1,7 @@
 package com.example.social.security;
 
+import javax.servlet.Filter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +13,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AwsCognitoJwtAuthFilter awsCognitoJwtAuthenticationFilter;
+	
+	@Autowired
+	private CorsFilter corsFilter;
+	
+	
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -22,6 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/**").authenticated()
 				//.anyRequest().authenticated()
 				.and()
+				.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(awsCognitoJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 

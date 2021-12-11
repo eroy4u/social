@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.example.social.security.JwtConfiguration;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -37,6 +39,15 @@ public class SocialApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SocialApplication.class, args);
+	}
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedHeaders("*").allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+			}
+		};
 	}
 	
 	@Bean

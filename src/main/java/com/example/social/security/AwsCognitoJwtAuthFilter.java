@@ -30,7 +30,7 @@ public class AwsCognitoJwtAuthFilter extends GenericFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception var6) {
-            logger.error("Cognito ID Token processing error", var6);
+            logger.error("Cognito ID Token processing error");
             SecurityContextHolder.clearContext();
         }
 

@@ -57,6 +57,6 @@ public class AwsCognitoIdTokenProcessor {
     }
 
     private String getBearerToken(String token) {
-        return token.startsWith("Bearer ") ? token.substring("Bearer ".length()) : token;
+        return token.startsWith("JWT ") ? token.substring("JWT ".length()) : token;
     }
 }
