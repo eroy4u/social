@@ -1,0 +1,69 @@
+apiVersion: eksctl.io/v1alpha5
+availabilityZones:
+- ap-southeast-1a
+- ap-southeast-1c
+- ap-southeast-1b
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+iam:
+  vpcResourceControllerPolicy: true
+  withOIDC: true
+kind: ClusterConfig
+managedNodeGroups:
+- amiFamily: AmazonLinux2
+  desiredCapacity: 2
+  disableIMDSv1: false
+  disablePodIMDS: false
+  iam:
+    withAddonPolicies:
+      albIngress: true
+      appMesh: false
+      appMeshPreview: false
+      autoScaler: false
+      certManager: false
+      cloudWatch: true
+      ebs: false
+      efs: false
+      externalDNS: false
+      fsx: false
+      imageBuilder: false
+      xRay: false
+  instanceSelector: {}
+  instanceType: t3.small
+  labels: {role: mngworker}
+  maxSize: 2
+  minSize: 2
+  name: my-nodes
+  privateNetworking: false
+  releaseVersion: ""
+  securityGroups:
+    withLocal: null
+    withShared: null
+  ssh:
+    allow: false
+    publicKeyPath: ""
+  tags:
+    alpha.eksctl.io/nodegroup-name: my-nodes
+    alpha.eksctl.io/nodegroup-type: managed
+  volumeIOPS: 3000
+  volumeSize: 80
+  volumeThroughput: 125
+  volumeType: gp3
+metadata:
+  name: my-cluster
+  region: ap-southeast-1
+  version: "1.21"
+privateCluster:
+  enabled: false
+  skipEndpointCreation: false
+vpc:
+  autoAllocateIPv6: false
+  cidr: 192.168.0.0/16
+  clusterEndpoints:
+    privateAccess: false
+    publicAccess: true
+  manageSharedNodeSecurityGroupRules: true
+  nat:
+    gateway: Single
+
