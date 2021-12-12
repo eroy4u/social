@@ -21,6 +21,8 @@ import com.example.social.domain.Photo;
 import com.example.social.domain.PhotoRepository;
 import com.example.social.domain.PresignedResponse;
 import com.example.social.domain.ResizeRequest;
+import com.example.social.domain.User;
+import com.example.social.security.JwtAuthentication;
 import com.example.social.utils.S3Utils;
 
 @RestController
@@ -29,39 +31,40 @@ public class PhotoController {
 	public static final long EXPIRED_DAYS = 7;
 	
 	@Autowired
-	private PhotoRepository photoRespository;
+	private PhotoRepository photoRepository;
 	
 	@GetMapping("/photo")
 	public Iterable<Photo> all(){
-		return photoRespository.findAll();
+		return photoRepository.findAll();
 	}
 	
-	@GetMapping("/test")
-	public String test() {
+	private User getUser(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = authentication.getPrincipal();
-		System.out.println(principal);
-		System.out.println(authentication.getDetails());
-		return "abc";
+		User user = (principal instanceof User) ? (User) principal : null;
+		return user;
 	}
 	
 	@PostMapping("/resize")	
-	public String resize(@RequestBody ResizeRequest resizeRequest) throws IOException {
-		//1. take photo from s3 using the keyName
+	public Photo resize(@RequestBody ResizeRequest resizeRequest) throws IOException {
+		//1. download photo from s3 using the keyName
 		//2. Resize to thumbnail size and put it back to s3 with thumbnail prefix
 		//3. Resize per width/height or ratio and put it back to s3 with resized prefix
 		//4. get presigned get URL with 7 days duration
-		//5. save to Photo
+		//5. save as new Photo in database
 		
 		String filename = resizeRequest.getKeyName().split("/")[1];
 		
+		//1. download photo from s3 using the keyName
 		S3Utils s3Utils = new S3Utils();
 		BufferedImage source = s3Utils.downloadImage(resizeRequest.getKeyName());
 		
+		//2. Resize to thumbnail size and put it back to s3 with thumbnail prefix
 		BufferedImage thumbnail = Scalr.resize(source, 100);
 		String thumbnailKey = "thumbnail/"+filename;
 		s3Utils.uploadImage(thumbnail, thumbnailKey);
 		
+		//3. Resize per width/height or ratio and put it back to s3 with resized prefix
 		BufferedImage resized = Scalr.resize(source, 200);
 		String resizedKey = "resized/"+filename;
 		s3Utils.uploadImage(resized, resizedKey);
@@ -74,14 +77,9 @@ public class PhotoController {
 		photo.setExpiredAt(expired);
 		photo.setResizedPath(s3Utils.getPresignedGet(resizedKey, EXPIRED_DAYS));
 		photo.setThumbnailPath(s3Utils.getPresignedGet(thumbnailKey, EXPIRED_DAYS));
+		photo.setUserId(getUser().getId());
 		
-		
-		
-		
-		
-		return resizeRequest.toString();
-		
-//		return resizeRequest.toString();//		return photoRespository.save(photo);
+		return photoRepository.save(photo);
 		
 	}
 	

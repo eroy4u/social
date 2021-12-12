@@ -70,7 +70,7 @@ public class S3Utils {
 		S3Presigner presigner = S3Presigner.create();
 		GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucketName).key(keyName).build();
 		GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
-				.signatureDuration(Duration.ofDays(10)).getObjectRequest(getObjectRequest).build();
+				.signatureDuration(Duration.ofDays(days)).getObjectRequest(getObjectRequest).build();
 		// Generate the presigned request
 		PresignedGetObjectRequest presignedGetObjectRequest = presigner.presignGetObject(getObjectPresignRequest);
 		return presignedGetObjectRequest.url().toString();

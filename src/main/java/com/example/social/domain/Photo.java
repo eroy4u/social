@@ -2,6 +2,7 @@ package com.example.social.domain;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +22,11 @@ public class Photo {
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expiredAt;
+	
+	@Column(columnDefinition = "TEXT")
 	private String thumbnailPath;
+	
+	@Column(columnDefinition = "TEXT")
 	private String resizedPath;
 
 	public String getUserId() {

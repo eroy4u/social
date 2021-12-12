@@ -1,5 +1,6 @@
 package com.example.social.security;
 
+import com.example.social.domain.User;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,5 +29,12 @@ public class JwtAuthentication extends AbstractAuthenticationToken {
 
     public JWTClaimsSet getJwtClaimsSet() {
         return this.jwtClaimsSet;
+    }
+    
+    public User getUser() {
+    	if (principal != null && principal instanceof User) {
+    		return (User) this.principal;
+    	}
+    	return null;
     }
 }

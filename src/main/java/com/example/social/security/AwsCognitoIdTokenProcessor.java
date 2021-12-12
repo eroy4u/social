@@ -1,12 +1,12 @@
 package com.example.social.security;
 
+import com.example.social.domain.User;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,15 +31,21 @@ public class AwsCognitoIdTokenProcessor {
             validateIssuer(claims);
             verifyIfIdToken(claims);
             String username = getUserNameFrom(claims);
-            if (username != null) {
+            String id = getIdFrom(claims);
+            if (username != null && id != null) {
                 List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>() ;
-                User user = new User(username, "", grantedAuthorities );
+                User user = new User(id, username, "", grantedAuthorities );
                 return new JwtAuthentication(user, claims, grantedAuthorities);
             }
         }
         return null;
     }
 
+    private String getIdFrom(JWTClaimsSet claims) {
+        return claims.getClaims().get("sub").toString();
+    }
+
+    
     private String getUserNameFrom(JWTClaimsSet claims) {
         return claims.getClaims().get(this.jwtConfiguration.getUserNameField()).toString();
     }
