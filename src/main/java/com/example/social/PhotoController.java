@@ -35,7 +35,8 @@ public class PhotoController {
 	
 	@GetMapping("/photo")
 	public Iterable<Photo> all(){
-		return photoRepository.findAll();
+		String userId = getUser().getId();
+		return photoRepository.findByUserIdAndExpiredAtGreaterThanOrderByCreatedAtDesc(userId, new Date());
 	}
 	
 	private User getUser(){
@@ -65,7 +66,23 @@ public class PhotoController {
 		s3Utils.uploadImage(thumbnail, thumbnailKey);
 		
 		//3. Resize per width/height or ratio and put it back to s3 with resized prefix
-		BufferedImage resized = Scalr.resize(source, 200);
+		int targetWidth = source.getWidth();
+		int targetHeight = source.getHeight();
+		//either a ratio is specified, or width/height are specified
+		if (resizeRequest.getRatio() > 0) {
+			targetWidth = (int) (targetWidth * resizeRequest.getRatio());
+			targetHeight = (int) (targetWidth * resizeRequest.getRatio());
+		}else {
+			if (resizeRequest.getWidth() >0 ) {
+				//resize by width
+				targetWidth = resizeRequest.getWidth();
+			}
+			if (resizeRequest.getHeight() > 0) {
+				targetHeight = resizeRequest.getHeight();
+			}	
+		}
+		
+		BufferedImage resized = Scalr.resize(source, targetWidth, targetHeight);
 		String resizedKey = "resized/"+filename;
 		s3Utils.uploadImage(resized, resizedKey);
 		
@@ -73,6 +90,7 @@ public class PhotoController {
 		Photo photo = new Photo();
 		photo.setCreatedAt(new Date());
 		
+		//5. save as new Photo in database
 		Date expired = new Date(System.currentTimeMillis() + EXPIRED_DAYS * DAY_IN_MS);
 		photo.setExpiredAt(expired);
 		photo.setResizedPath(s3Utils.getPresignedGet(resizedKey, EXPIRED_DAYS));
