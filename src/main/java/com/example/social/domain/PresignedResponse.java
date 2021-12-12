@@ -12,4 +12,20 @@ public class PresignedResponse {
 		this.presignedUrl = presignedUrl;
 	}
 
+	public String getKeyName() {
+		return keyName;
+	}
+
+	public void setKeyName(String keyName) {
+		this.keyName = keyName;
+	}
+
+	public String getPresignedUrl() {
+		return presignedUrl;
+	}
+
+	public void setPresignedUrl(String presignedUrl) {
+		this.presignedUrl = presignedUrl;
+	}
+
 }

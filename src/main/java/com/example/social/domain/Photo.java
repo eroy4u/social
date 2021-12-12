@@ -1,11 +1,13 @@
 package com.example.social.domain;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 public class Photo {
@@ -13,7 +15,11 @@ public class Photo {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String userId;
+	
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
+	
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date expiredAt;
 	private String thumbnailPath;
 	private String resizedPath;
