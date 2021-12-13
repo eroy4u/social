@@ -6,6 +6,8 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:249586058154:certificate/4f09633d-0787-4fc3-838c-f9459d3ec189
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
   labels:
     app: my-ingress
 
