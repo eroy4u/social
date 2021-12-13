@@ -63,7 +63,7 @@ public class PhotoController {
 		BufferedImage source = s3Utils.downloadImage(resizeRequest.getKeyName());
 		
 		//2. Resize to thumbnail size and put it back to s3 with thumbnail prefix
-		BufferedImage thumbnail = Scalr.resize(source, 100);
+		BufferedImage thumbnail = Scalr.resize(source, 600);
 		String thumbnailKey = "thumbnail/"+filename;
 		s3Utils.uploadImage(thumbnail, thumbnailKey);
 		
